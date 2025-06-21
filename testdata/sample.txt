@@ -1,0 +1,5 @@
+
+
+go run main.go -e 'any(.status.conditions[]; .type == "Ready" and .status == "True")' \
+    api/v1/namespaces/default/pods/delayed-pod
+
