@@ -36,6 +36,24 @@ func tlsConfigFor(ep *Config) (http.RoundTripper, error) {
 		res.Proxy = http.ProxyURL(u)
 	}
 
+	caCertPool := x509.NewCertPool()
+
+	if len(ep.CertificateAuthorityData) > 0 {
+		caData, err := base64.StdEncoding.DecodeString(ep.CertificateAuthorityData)
+		if err != nil {
+			return nil, fmt.Errorf("unable to decode certificate authority data")
+		}
+
+		caCertPool.AppendCertsFromPEM(caData)
+	}
+
+	tlsConfig := &tls.Config{
+		RootCAs: caCertPool,
+	}
+	defer func() {
+		res.TLSClientConfig = tlsConfig
+	}()
+
 	if !ep.HasCertAuth() {
 		return res, nil
 	}
@@ -55,23 +73,8 @@ func tlsConfigFor(ep *Config) (http.RoundTripper, error) {
 		return res, err
 	}
 
-	caCertPool := x509.NewCertPool()
+	tlsConfig.Certificates = []tls.Certificate{cert}
 
-	if len(ep.CertificateAuthorityData) > 0 {
-		caData, err := base64.StdEncoding.DecodeString(ep.CertificateAuthorityData)
-		if err != nil {
-			return nil, fmt.Errorf("unable to decode certificate authority data")
-		}
-
-		caCertPool.AppendCertsFromPEM(caData)
-	}
-
-	tlsConfig := &tls.Config{
-		RootCAs:      caCertPool,
-		Certificates: []tls.Certificate{cert},
-	}
-
-	res.TLSClientConfig = tlsConfig
 	return res, nil
 }
 

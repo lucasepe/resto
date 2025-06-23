@@ -28,7 +28,7 @@ func Do(args []string) error {
 			"cert-key=",
 			"file=",
 			"header=",
-			"insecure=",
+			"insecure",
 			"initial-delay=",
 			"max-jitter=",
 			"password=",
