@@ -63,8 +63,8 @@ func Do(args []string) error {
 	expr := getoptutil.EnvOrOptVal("UNTIL", opts, []string{"--until"})
 
 	cfg := restClientConfig(opts)
-	if cfg.ServerURL == "" {
-		cfg.ServerURL = reqOpts.BaseURL
+	if reqOpts.BaseURL == "" {
+		reqOpts.BaseURL = cfg.ServerURL
 	}
 
 	if cfg.Verbose && expr != "" {
